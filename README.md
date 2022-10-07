@@ -15,7 +15,7 @@
 ## Start
 
 ```bash
-docker-compose -p cluster1 up -d
+docker-compose -p kafkaserver up -d
 ```
 
 ## Configuration notes

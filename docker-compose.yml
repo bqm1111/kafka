@@ -1,8 +1,10 @@
-version: '3.5'
+version: '3.9'
 
 services:
     zookeeper:
         image: confluentinc/cp-zookeeper:latest
+        user: root
+        container_name: kafka_zookeeper
         environment: 
             ZOOKEEPER_CLIENT_PORT: 2181
             ZOOKEEPER_TICK_TIME: 2000
@@ -11,6 +13,12 @@ services:
 
     broker:
         image: confluentinc/cp-enterprise-kafka:latest
+        user: root
+        container_name: kafka_broker_1
+        volumes:
+          - type: bind
+            source: /mnt/kafka/broker_1
+            target: /var/lib/kafka/data
         depends_on:
             - zookeeper
         ports: 
@@ -20,11 +28,15 @@ services:
             KAFKA_BROKER_ID: 1
             KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
             KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://X1server.local:9092
             KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
             KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
             KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
             KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+            KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+            KAFKA_MESSAGE_MAX_BYTES: 10485880
+            KAFKA_REPLICA_FETCH_MAX_BYTES: 10485880
+            KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 60000
             CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker:29092
             CONFLUENT_METRICS_REPORTER_ZOOKEEPER_CONNECT: zookeeper:2181
             CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
@@ -33,6 +45,7 @@ services:
 
     schema-registry:
         image: confluentinc/cp-schema-registry
+        container_name: kafka_schema_registry
         depends_on:
             - zookeeper
             - broker
@@ -44,6 +57,7 @@ services:
 
     control-center:
         image: confluentinc/cp-enterprise-control-center:latest
+        container_name: kafka_control_center
         depends_on:
             - zookeeper
             - broker
@@ -65,6 +79,7 @@ services:
 
     rest-proxy:
         image: confluentinc/cp-kafka-rest:latest
+        container_name: kafka_rest_proxy
         depends_on:
             - zookeeper
             - broker
@@ -78,6 +93,7 @@ services:
 
     kafka-topics-ui:
         image: landoop/kafka-topics-ui:0.9.4
+        container_name: kafka_ui
         depends_on:
             - zookeeper
             - broker
