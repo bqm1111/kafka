@@ -24,3 +24,4 @@ docker-compose -p kafkaserver up -d
 
 - <https://www.altoros.com/blog/multi-cluster-deployment-options-for-apache-kafka-pros-and-cons/>
 - <https://docs.confluent.io/platform/current/multi-dc-deployments/replicator/replicator-docker-tutorial.html#replicator>
+- <https://github.com/confluentinc/kafka-images/issues/127>
