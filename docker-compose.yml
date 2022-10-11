@@ -1,4 +1,6 @@
 version: '3.9'
+volumes:
+  kafka-data:
 
 services:
     zookeeper:
@@ -16,8 +18,8 @@ services:
         user: root
         container_name: kafka_broker_1
         volumes:
-          - type: bind
-            source: /mnt/kafka/broker_1
+          - type: volume
+            source: kafka-data
             target: /var/lib/kafka/data
         depends_on:
             - zookeeper
@@ -28,7 +30,7 @@ services:
             KAFKA_BROKER_ID: 1
             KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
             KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://X1server.local:9092
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://172.21.100.167:9092
             KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
             KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
             KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
